@@ -1,8 +1,25 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 
-const TranspoScreen = () => {
+const TranspoScreen = ({ route }) => {
+  const { updateExpenses } = route.params;
   const [amount, setAmount] = useState('');
+
+  const handleSubtract = () => {
+    const value = parseFloat(amount);
+    if (!isNaN(value) && value > 0) {
+      updateExpenses('Auto & Transport', -value);
+      setAmount('');
+    }
+  };
+
+  const handleAdd = () => {
+    const value = parseFloat(amount);
+    if (!isNaN(value) && value > 0) {
+      updateExpenses('Auto & Transport', value);
+      setAmount('');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -16,10 +33,10 @@ const TranspoScreen = () => {
       />
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => {/* Subtract logic */}}>
+        <TouchableOpacity style={styles.button} onPress={handleSubtract}>
           <Text style={styles.buttonText}>Subtract</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => {/* Add logic */}}>
+        <TouchableOpacity style={styles.button} onPress={handleAdd}>
           <Text style={styles.buttonText}>Add</Text>
         </TouchableOpacity>
       </View>

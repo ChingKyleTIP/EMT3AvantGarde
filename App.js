@@ -16,14 +16,29 @@ import Settings from './Settings/Settings';
 const Stack = createStackNavigator();
 
 const App = () => {
+  const [dailyBudget, setDailyBudget] = useState(0);
+  const [savingGoal, setSavingGoal] = useState(0);
+
+  const updateDailyBudget = (amount) => {
+    setDailyBudget(amount);
+  };
+
+  const updateSavingGoal = (amount) => {
+    setSavingGoal(amount);
+  };
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="Main" component={MainScreen} />
-        <Stack.Screen name="Daily" component={DailyScreen} />
+        <Stack.Screen name="Main">
+          {props => <MainScreen {...props} dailyBudget={dailyBudget} savingGoal={savingGoal} />}
+        </Stack.Screen>
+        <Stack.Screen name="Daily">
+          {props => <DailyScreen {...props} updateDailyBudget={updateDailyBudget} updateSavingGoal={updateSavingGoal} />}
+        </Stack.Screen>
         <Stack.Screen name="Add" component={AddScreen} />
         <Stack.Screen name="Transpo" component={TranspoScreen} />
         <Stack.Screen name="Food" component={FoodScreen} />

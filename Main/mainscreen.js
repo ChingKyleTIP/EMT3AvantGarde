@@ -1,12 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { IconButton } from 'react-native-paper';
 
-const MainScreen = ({ navigation }) => {
+const MainScreen = ({ navigation, dailyBudget, savingGoal }) => {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [budgetData, setBudgetData] = useState({
+    totalSaved: 1550,
+    leftToSpend: 148,
+    categories: [
+      { name: 'Total Expenses', budget: 252, spent: 0, icon: 'cash' },
+      { name: 'Auto & Transport', budget: 100, spent: 0, icon: 'car' },
+      { name: 'Food', budget: 60, spent: 0, icon: 'restaurant' },
+      { name: 'Unforeseen Expenses', budget: 40, spent: 0, icon: 'alert' },
+    ],
+  });
+
+  // Function to calculate total expenses
+  const calculateTotalExpenses = () => {
+    const totalSpent = budgetData.categories.reduce((total, category) => {
+      if (category.name !== 'Total Expenses') {
+        return total + category.spent;
+      }
+      return total;
+    }, 0);
+    setBudgetData(prevData => ({
+      ...prevData,
+      categories: prevData.categories.map(category =>
+        category.name === 'Total Expenses' ? { ...category, spent: totalSpent } : category
+      ),
+    }));
+  };
+
+  // Update total expenses whenever budgetData changes
+  useEffect(() => {
+    calculateTotalExpenses();
+  }, [budgetData]);
+
+  useEffect(() => {
+    setBudgetData(prevData => ({
+      ...prevData,
+      dailyBudget,
+      savingGoal,
+    }));
+  }, [dailyBudget, savingGoal]);
 
   const onChangeDate = (event, selectedDate) => {
     setShowDatePicker(false);
@@ -15,24 +54,14 @@ const MainScreen = ({ navigation }) => {
     }
   };
 
-  const budgetData = {
-    totalSaved: 1550,
-    leftToSpend: 148,
-    dailyBudget: 400,
-    categories: [
-      { name: 'Total Expenses', budget: 252, spent: 612 }, // Using cash icon for Expenses
-      { name: 'Auto & Transport', budget: 100, spent: 98 }, // Using car icon for Auto & Transport
-      { name: 'Food', budget: 60, spent: 120 }, // Using restaurant icon for Food
-      { name: 'Unforeseen Expenses', budget: 40, spent: 120 }, // Using alert icon for Unforeseen Expenses
-    ],
-  };
-
-  const navigateToCreditScore = () => {
-    navigation.navigate('CreditScore');
-  };
-
-  const navigateToSettings = () => {
-    navigation.navigate('Settings');
+  // Function to update expenses
+  const updateExpenses = (categoryName, amount) => {
+    setBudgetData(prevData => ({
+      ...prevData,
+      categories: prevData.categories.map(category =>
+        category.name === categoryName ? { ...category, spent: category.spent + amount } : category
+      ),
+    }));
   };
 
   return (
@@ -40,7 +69,7 @@ const MainScreen = ({ navigation }) => {
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Total Saved Money</Text>
-          <TouchableOpacity style={styles.plusIcon} onPress={() => navigation.navigate('Add')}>
+          <TouchableOpacity style={styles.plusIcon} onPress={() => navigation.navigate('Add', { updateExpenses })}>
             <Ionicons name="add" size={30} color='white' />
           </TouchableOpacity>
         </View>
@@ -59,27 +88,18 @@ const MainScreen = ({ navigation }) => {
           />
         )}
 
-        {/* Credit Score Component */}
-        <TouchableOpacity style={styles.centeredContainer} onPress={navigateToCreditScore}>
-          <View style={styles.creditButton}>
-            <View style={styles.scoreCircle}>
-              <Text style={styles.creditScore}>1325</Text>
-              <Text style={styles.creditLabel}>Good</Text>
-            </View>
-            <View style={styles.details}>
-              <Text style={styles.detailText}>On-time payments: 90% (1 missed)</Text>
-              <Text style={styles.detailText}>Credit Utilization: 95% (Not bad)</Text>
-              <Text style={styles.detailText}>Age of Credit: 8 Years (Good)</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
+        <View style={styles.totalExpensesContainer}>
+          <Text style={styles.totalExpensesText}>Total Expenses: ₱{budgetData.categories.find(c => c.name === 'Total Expenses').spent}</Text>
+        </View>
 
         <View style={styles.budgetFrame}>
           <View style={styles.budgetOverview}>
             <Text style={styles.budgetText}>Left to spend</Text>
             <Text style={styles.budgetAmount}>₱{budgetData.leftToSpend}</Text>
             <Text style={styles.budgetText}>Daily budget</Text>
-            <Text style={styles.budgetAmount}>₱{budgetData.dailyBudget}</Text>
+            <Text style={styles.budgetAmount}>₱{dailyBudget}</Text>
+            <Text style={styles.budgetText}>Saving Goal</Text>
+            <Text style={styles.budgetAmount}>₱{savingGoal}</Text>
           </View>
           <View style={styles.categories}>
             {budgetData.categories.map((category, index) => (
@@ -89,15 +109,7 @@ const MainScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.categoryDetails}>
                   <Text style={styles.categoryName}>{category.name}</Text>
-                  <View style={styles.categoryProgress}>
-                    <View
-                      style={[
-                        styles.progress,
-                        { width: `${(100 * category.spent) / category.budget}%` },
-                      ]}
-                    />
-                  </View>
-                  <Text style={styles.categoryBudget}>₱{category.budget}</Text>
+                  <Text style={styles.categoryBudget}>₱{category.budget} / ₱{category.spent}</Text>
                 </View>
               </View>
             ))}
@@ -110,14 +122,14 @@ const MainScreen = ({ navigation }) => {
             color="#ffffff"
             size={50}
             style={[styles.iconButton, styles.settingsButton]}
-            onPress={navigateToSettings}
+            onPress={() => navigation.navigate('Settings')}
           />
           <IconButton
             icon="credit-card"
             color="#ffffff"
             size={50}
             style={[styles.iconButton, styles.creditScoreButton]}
-            onPress={navigateToCreditScore}
+            onPress={() => navigation.navigate('CreditScore')}
           />
         </View>
       </ScrollView>
@@ -159,6 +171,17 @@ const styles = StyleSheet.create({
     color: 'white',
     marginBottom: 10,
   },
+  totalExpensesContainer: {
+    backgroundColor: '#333333',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  totalExpensesText: {
+    color: 'white',
+    fontSize: 18,
+  },
   budgetFrame: {
     backgroundColor: 'rgba(61, 61, 61, 0.5)',
     margin: 20,
@@ -198,18 +221,6 @@ const styles = StyleSheet.create({
     color: 'white',
     flex: 1,
   },
-  categoryProgress: {
-    backgroundColor: '#eee',
-    height: 20,
-    borderRadius: 10,
-    overflow: 'hidden',
-    flex: 1,
-    marginHorizontal: 10,
-  },
-  progress: {
-    backgroundColor: '#00ff00',
-    borderRadius: 10,
-  },
   categoryBudget: {
     fontSize: 18,
     color: 'white',
@@ -227,57 +238,6 @@ const styles = StyleSheet.create({
   },
   creditScoreButton: {
     backgroundColor: 'rgba(76, 175, 80, 0.5)',
-  },
-  centeredContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  creditButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(76, 175, 80, 0.5)',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    width: '80%',
-    borderWidth: 2,
-    borderColor: '#4CAF50',
-  },
-  scoreCircle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 100,
-    height: 100,
-    backgroundColor: 'white',
-    borderRadius: 50,
-    marginRight: 20,
-  },
-  creditScore: {
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
-  creditLabel: {
-    fontSize: 18,
-    color: '#4CAF50',
-  },
-  details: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    marginHorizontal: 20,
-    marginTop: 10,
-  },
-  detailText: {
-    fontSize: 16,
-    color: '#333',
-    lineHeight: 24,
-    marginBottom: 5,
   },
 });
 

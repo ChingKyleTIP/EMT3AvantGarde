@@ -1,19 +1,20 @@
-// Add.js
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
-const AddScreen = ({ navigation }) => {
+const AddScreen = ({ navigation, route }) => {
+  const { updateExpenses } = route.params;
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Transpo')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Transpo', { updateExpenses })}>
         <Text style={styles.buttonText}>Auto & Transportation</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Food')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Food', { updateExpenses })}>
         <Text style={styles.buttonText}>Food</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Unforeseen')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Unforeseen', { updateExpenses })}>
         <Text style={styles.buttonText}>Unforeseen Expenses</Text>
       </TouchableOpacity>
 

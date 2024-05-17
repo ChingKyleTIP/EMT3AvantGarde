@@ -1,8 +1,25 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 
-const UnforeseenScreen = () => {
+const UnforeseenScreen = ({ route }) => {
+  const { updateExpenses } = route.params;
   const [amount, setAmount] = useState('');
+
+  const handleSubtract = () => {
+    const value = parseFloat(amount);
+    if (!isNaN(value) && value > 0) {
+      updateExpenses('Unforeseen Expenses', -value);
+      setAmount('');
+    }
+  };
+
+  const handleAdd = () => {
+    const value = parseFloat(amount);
+    if (!isNaN(value) && value > 0) {
+      updateExpenses('Unforeseen Expenses', value);
+      setAmount('');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -10,16 +27,16 @@ const UnforeseenScreen = () => {
         style={styles.input}
         onChangeText={setAmount}
         value={amount}
-        placeholder="Enter your UnforeseenScreen Expenses"
+        placeholder="Enter your Unforeseen Expenses"
         keyboardType="numeric"
         placeholderTextColor="#aaa"
       />
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => {/* Subtract logic */}}>
+        <TouchableOpacity style={styles.button} onPress={handleSubtract}>
           <Text style={styles.buttonText}>Subtract</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => {/* Add logic */}}>
+        <TouchableOpacity style={styles.button} onPress={handleAdd}>
           <Text style={styles.buttonText}>Add</Text>
         </TouchableOpacity>
       </View>
@@ -41,7 +58,7 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     width: '80%',
-    marginVertical: 5,
+    marginVertical: 5, // Reduce vertical margin
     borderWidth: 1,
     borderColor: 'white',
     color: 'white',
@@ -50,22 +67,21 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center', // Center the buttons horizontally
-    width: '100%',
-    marginTop: 10,
+    marginVertical: 5, // Reduce vertical margin
   },
   button: {
-    backgroundColor: '#E94D14',
+    backgroundColor: '#E94D14', // an orange color for the button background
     padding: 15,
     borderRadius: 25,
-    marginHorizontal: 5, // Adjusted to bring the buttons closer together
+    marginHorizontal: 10,
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
   },
   bottomImage: {
-    width: 300,
-    height: 300,
+    width: 300, // Adjust as needed
+    height: 300, // Adjust as needed
     resizeMode: 'contain',
   },
 });
