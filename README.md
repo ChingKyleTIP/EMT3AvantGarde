@@ -21,7 +21,6 @@ Welcome to the **Development of a Budget Tracking Mobile Application** repositor
 
 ### User-Friendly Interface
 - **Intuitive Design**: The app features a simple and intuitive design that makes it easy to navigate.
-- **Visual Aids**: Graphs and charts help users visualize their spending patterns.
 
 ## Screenshots
 
