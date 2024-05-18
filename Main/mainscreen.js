@@ -1,51 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ImageBackground } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ImageBackground, TextInput } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { IconButton } from 'react-native-paper';
 
-const MainScreen = ({ navigation, dailyBudget, savingGoal }) => {
+const MainScreen = ({ navigation, dailyBudget, setDailyBudget }) => {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [budgetData, setBudgetData] = useState({
     totalSaved: 1550,
-    leftToSpend: 148,
+    leftToSpend: 0,
     categories: [
-      { name: 'Total Expenses', budget: 252, spent: 0, icon: 'cash' },
-      { name: 'Auto & Transport', budget: 100, spent: 0, icon: 'car' },
-      { name: 'Food', budget: 60, spent: 0, icon: 'restaurant' },
-      { name: 'Unforeseen Expenses', budget: 40, spent: 0, icon: 'alert' },
+      { name: 'Total Expenses', spent: 0, icon: 'cash' },
+      { name: 'Auto & Transport', spent: 0, icon: 'car' },
+      { name: 'Food', spent: 0, icon: 'restaurant' },
+      { name: 'Unforeseen Expenses', spent: 0, icon: 'alert' },
     ],
   });
 
-  // Function to calculate total expenses
-  const calculateTotalExpenses = () => {
+  // Function to calculate total expenses and update left to spend
+  const calculateTotalExpenses = useCallback(() => {
     const totalSpent = budgetData.categories.reduce((total, category) => {
       if (category.name !== 'Total Expenses') {
         return total + category.spent;
       }
       return total;
     }, 0);
-    setBudgetData(prevData => ({
-      ...prevData,
-      categories: prevData.categories.map(category =>
-        category.name === 'Total Expenses' ? { ...category, spent: totalSpent } : category
-      ),
-    }));
-  };
 
-  // Update total expenses whenever budgetData changes
+    setBudgetData(prevData => {
+      if (prevData.leftToSpend !== dailyBudget - totalSpent || prevData.categories[0].spent !== totalSpent) {
+        return {
+          ...prevData,
+          categories: prevData.categories.map(category =>
+            category.name === 'Total Expenses' ? { ...category, spent: totalSpent } : category
+          ),
+          leftToSpend: dailyBudget - totalSpent,
+        };
+      }
+      return prevData;
+    });
+  }, [budgetData.categories, dailyBudget]);
+
   useEffect(() => {
     calculateTotalExpenses();
-  }, [budgetData]);
-
-  useEffect(() => {
-    setBudgetData(prevData => ({
-      ...prevData,
-      dailyBudget,
-      savingGoal,
-    }));
-  }, [dailyBudget, savingGoal]);
+  }, [calculateTotalExpenses]);
 
   const onChangeDate = (event, selectedDate) => {
     setShowDatePicker(false);
@@ -65,7 +63,7 @@ const MainScreen = ({ navigation, dailyBudget, savingGoal }) => {
   };
 
   return (
-    <ImageBackground source={require('C:/Users/Ching/Documents/NEWEMT3/project - Copy/images/PentDark.png')} style={styles.backgroundImage}>
+    <ImageBackground source={require('./PentDark.png')} style={styles.backgroundImage}>
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Total Saved Money</Text>
@@ -97,9 +95,12 @@ const MainScreen = ({ navigation, dailyBudget, savingGoal }) => {
             <Text style={styles.budgetText}>Left to spend</Text>
             <Text style={styles.budgetAmount}>₱{budgetData.leftToSpend}</Text>
             <Text style={styles.budgetText}>Daily budget</Text>
-            <Text style={styles.budgetAmount}>₱{dailyBudget}</Text>
-            <Text style={styles.budgetText}>Saving Goal</Text>
-            <Text style={styles.budgetAmount}>₱{savingGoal}</Text>
+            <TextInput
+              style={styles.budgetAmountInput}
+              value={dailyBudget.toString()}
+              onChangeText={text => setDailyBudget(Number(text))}
+              keyboardType="numeric"
+            />
           </View>
           <View style={styles.categories}>
             {budgetData.categories.map((category, index) => (
@@ -109,7 +110,7 @@ const MainScreen = ({ navigation, dailyBudget, savingGoal }) => {
                 </View>
                 <View style={styles.categoryDetails}>
                   <Text style={styles.categoryName}>{category.name}</Text>
-                  <Text style={styles.categoryBudget}>₱{category.budget} / ₱{category.spent}</Text>
+                  <Text style={styles.categorySpent}>Spent: ₱{category.spent}</Text>
                 </View>
               </View>
             ))}
@@ -123,13 +124,6 @@ const MainScreen = ({ navigation, dailyBudget, savingGoal }) => {
             size={50}
             style={[styles.iconButton, styles.settingsButton]}
             onPress={() => navigation.navigate('Settings')}
-          />
-          <IconButton
-            icon="credit-card"
-            color="#ffffff"
-            size={50}
-            style={[styles.iconButton, styles.creditScoreButton]}
-            onPress={() => navigation.navigate('CreditScore')}
           />
         </View>
       </ScrollView>
@@ -201,6 +195,14 @@ const styles = StyleSheet.create({
     color: 'white',
     marginBottom: 10,
   },
+  budgetAmountInput: {
+    fontSize: 20,
+    color: 'white',
+    marginBottom: 10,
+    borderBottomColor: 'white',
+    borderBottomWidth: 1,
+    textAlign: 'center',
+  },
   categories: {},
   category: {
     flexDirection: 'row',
@@ -221,7 +223,7 @@ const styles = StyleSheet.create({
     color: 'white',
     flex: 1,
   },
-  categoryBudget: {
+  categorySpent: {
     fontSize: 18,
     color: 'white',
   },
@@ -234,9 +236,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   settingsButton: {
-    backgroundColor: 'rgba(76, 175, 80, 0.5)',
-  },
-  creditScoreButton: {
     backgroundColor: 'rgba(76, 175, 80, 0.5)',
   },
 });

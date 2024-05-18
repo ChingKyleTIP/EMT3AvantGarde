@@ -1,4 +1,3 @@
-//login.js
 import React from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity, Text, ImageBackground, Dimensions } from 'react-native';
 
@@ -6,11 +5,6 @@ import { StyleSheet, View, TextInput, TouchableOpacity, Text, ImageBackground, D
 const { width, height } = Dimensions.get('window');
 
 const LoginScreen = ({ navigation }) => {
-  // This function should only navigate to SignUp
-  const onPressSignUp = () => {
-    navigation.navigate('SignUp');
-  };
-
   // This function should only navigate to Main
   const onPressLogin = () => {
     navigation.navigate('Main');
@@ -40,16 +34,10 @@ const LoginScreen = ({ navigation }) => {
             placeholderTextColor="#aaa"
             secureTextEntry
           />
-          <TouchableOpacity onPress={() => alert('Forgot password pressed')} style={styles.forgotPasswordContainer}>
-            <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-          </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.loginButton} onPress={onPressLogin}>
             <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.signupButton} onPress={onPressSignUp}>
-            <Text style={styles.buttonText}>Sign up</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
@@ -107,27 +95,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 15,
   },
-  forgotPasswordContainer: {
-    alignSelf: 'flex-end',
-    marginTop: -10,
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    color: '#f00',
-  },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '80%',
   },
   loginButton: {
-    backgroundColor: '#E94D14',
-    paddingVertical: 15,
-    paddingHorizontal: 50,
-    borderRadius: 25,
-    elevation: 5,
-  },
-  signupButton: {
     backgroundColor: '#E94D14',
     paddingVertical: 15,
     paddingHorizontal: 50,

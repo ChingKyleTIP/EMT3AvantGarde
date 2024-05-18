@@ -41,7 +41,7 @@ const DailyScreen = ({ navigation }) => {
       </View>
       {/* Logo in the footer */}
       <View style={styles.logoContainer}>
-        <Image source={require('C:/Users/Ching/Documents/NEWEMT3/project - Copy/images/color_w_trans.png')} style={styles.logo} />
+        <Image source={require('./color_w_trans.png')} style={styles.logo} />
       </View>
     </View>
   );

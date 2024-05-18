@@ -30,7 +30,7 @@ const SignUpScreen = ({ navigation }) => {
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
       </View>
-      <Image source={require('C:/Users/Ching/Documents/NEWEMT3/project - Copy/images/avant.png')} style={styles.logo} />
+      <Image source={require('./avant.png')} style={styles.logo} />
       {/* Slogan at the bottom */}
       
     </View>

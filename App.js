@@ -2,48 +2,58 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, ImageBackground, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import LoginScreen from './Login/login'; // Adjust the import path accordingly
-import SignUpScreen from './SignUp/Signup';
 import MainScreen from './Main/mainscreen';
-import DailyScreen from './Daily/Daily'; // Adjust the import path accordingly
 import AddScreen from './components/add/add';
 import TranspoScreen from './components/transpo/transpo';
 import FoodScreen from './components/food/food';
 import UnforeseenScreen from './components/unforseen/unforseen';
-import CreditScore from './Creditscore/Score'; // Adjust the import path to Score.js
 import Settings from './Settings/Settings';
 
 const Stack = createStackNavigator();
 
+// Prevent the splash screen from auto-hiding
+SplashScreen.preventAutoHideAsync();
+
 const App = () => {
   const [dailyBudget, setDailyBudget] = useState(0);
-  const [savingGoal, setSavingGoal] = useState(0);
+  const [isLoadingComplete, setLoadingComplete] = useState(false);
 
-  const updateDailyBudget = (amount) => {
-    setDailyBudget(amount);
-  };
+  useEffect(() => {
+    async function loadResourcesAndDataAsync() {
+      try {
+        await Font.loadAsync({
+          'Poppins': require('./assets/Poppins-Regular.ttf'),
+        });
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setLoadingComplete(true);
+        SplashScreen.hideAsync(); // Hide the splash screen
+      }
+    }
 
-  const updateSavingGoal = (amount) => {
-    setSavingGoal(amount);
-  };
+    loadResourcesAndDataAsync();
+  }, []);
+
+  if (!isLoadingComplete) {
+    return null; // Alternatively, render a loading spinner
+  }
 
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="Main">
-          {props => <MainScreen {...props} dailyBudget={dailyBudget} savingGoal={savingGoal} />}
-        </Stack.Screen>
-        <Stack.Screen name="Daily">
-          {props => <DailyScreen {...props} updateDailyBudget={updateDailyBudget} updateSavingGoal={updateSavingGoal} />}
+          {props => <MainScreen {...props} dailyBudget={dailyBudget} setDailyBudget={setDailyBudget} />}
         </Stack.Screen>
         <Stack.Screen name="Add" component={AddScreen} />
         <Stack.Screen name="Transpo" component={TranspoScreen} />
         <Stack.Screen name="Food" component={FoodScreen} />
         <Stack.Screen name="Unforeseen" component={UnforeseenScreen} />
-        <Stack.Screen name="CreditScore" component={CreditScore} options={{ title: 'Credit Score' }} />
         <Stack.Screen name="Settings" component={Settings} />
       </Stack.Navigator>
     </NavigationContainer>

@@ -19,7 +19,7 @@ const AddScreen = ({ navigation, route }) => {
       </TouchableOpacity>
 
       <View style={styles.logoContainer}>
-        <Image source={require('C:/Users/Ching/Documents/NEWEMT3/project - Copy/images/avant.png')} style={styles.logo} />
+        <Image source={require('./avant.png')} style={styles.logo} />
       </View>
     </View>
   );

@@ -42,7 +42,7 @@ const FoodScreen = ({ route }) => {
       </View>
 
       {/* Image at the bottom */}
-      <Image source={require('C:/Users/Ching/Documents/NEWEMT3/project - Copy/images/avant.png')} style={styles.bottomImage} />
+      <Image source={require('./avant.png')} style={styles.bottomImage} />
     </View>
   );
 };
