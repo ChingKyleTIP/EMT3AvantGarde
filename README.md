@@ -1,4 +1,5 @@
 # Development of a Budget Tracking Mobile Application
+![AvantGarde](main_screen)
 
 Welcome to the **Development of a Budget Tracking Mobile Application** repository. This mobile application is designed to help users effectively manage their daily budgets by tracking their spending across different categories.
 
