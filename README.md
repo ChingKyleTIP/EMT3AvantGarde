@@ -27,6 +27,6 @@ Welcome to the **Development of a Budget Tracking Mobile Application** repositor
 ![Main Screen](main_screen.jpg)
 *Main screen showing daily budget, total expenses, and categories*
 
-![Add Expense](add_expense.jpg)
+![Add Expense](add_expense)
 *Screen to add expenses in different categories*
 
